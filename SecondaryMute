@@ -1,6 +1,9 @@
 /**
  * A small In-Room controls panel to simulate a secondary mute button
  * Counts how many time widget is clicked (displayed on console)
+ * 
+ * ERROR: Counts ALL widgets pressed
+ * 
  */
 const xapi = require('xapi');
 
@@ -26,16 +29,19 @@ function setMute(mute) {
 function listenToGui() {
   xapi.event.on('UserInterface Extensions Widget Action', (event) => {
     if(event.Type === 'clicked'){
-      if(i%2 === 0){
-         setMute(true);
-         i++;
-         console.log(i);
-      }
-      else{
-         setMute(false);
-         i++;
-         console.log(i);
-      }
+      const number = numbers[event.WidgetId];       //Only account for widgets in "numbers" array
+       if(number){
+        if(i%2 === 0){
+           setMute(true);
+           i++;
+           console.log(i);
+        }
+        else{
+           setMute(false);
+           i++;
+           console.log(i);
+        }
+       }
     }
   });
 }
