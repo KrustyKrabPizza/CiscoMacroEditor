@@ -1,0 +1,16 @@
+const xapi = require('xapi');
+
+function alert(title, text = '', duration = 5) {
+  xapi.command('UserInterface Message Alert Display', {
+    Title: title,
+    Text: text,
+    Duration: duration,
+  });
+}
+
+function setMute(mute) {
+  xapi.command(mute ? 'Audio Microphones Mute' : 'Audio Microphones Unmute');
+  if (mute) alert('A script automatically muted you');
+}
+
+setMute(true);  //To unmute, set setMute() to false
