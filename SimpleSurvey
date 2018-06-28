@@ -1,0 +1,49 @@
+//Jose Fernandez: 
+//This script executes a simple survey
+//Currently, there is no way to output these results anywhere outside the Macro Editor
+
+
+const xapi = require('xapi');
+/*
+//To have the survey pop up after each ended call, uncomment below.
+xapi.event.on('CallDisconnect', (event) => {
+    if(event.Duration > 0){
+        xapi.command("UserInterface Message Prompt Display", {Title: "How was the meeting experience", Text: 'How would you rate this demo', 'Option.1':'Wow, that was cool!!!', 'Option.2':'It was OK', 'Option.3': 'Unsatisfactory'});
+    }
+});*/
+
+const survey = {
+  surveyButton : 'Launch',
+};
+
+xapi.event.on('UserInterface Extensions Widget Action', (event) =>{
+  if(event.Type === 'clicked'){
+    const choice = survey[event.WidgetId];
+    if(choice){
+      xapi.command("UserInterface Message Prompt Display", {Title: "How was the meeting experience", Text: 'How would you rate this demo', 'Option.1':'Wow, that was great!', 'Option.2':'It was OK', 'Option.3': 'Unsatisfactory'});
+    }
+  }
+});
+
+xapi.event.on('UserInterface Message Prompt Response', (event) => {
+    var displaytitle = '';
+    var displaytext = '';
+    switch(event.OptionId){
+        case '1':
+            displaytitle = ':-)';
+            displaytext = 'Thank you!';
+            break;
+        case '2':
+            displaytitle = ':-\\';
+            displaytext = 'Ok, will try even harder the next time';
+            break;
+        case '3':
+            displaytitle = ':-(';
+            displaytext = '';
+            break;
+
+        default:
+            displaytext = 'Unhandled answer';
+    }
+    xapi.command("UserInterface Message Alert Display", {Title: displaytitle, Text: displaytext, Duration: 8});
+});
