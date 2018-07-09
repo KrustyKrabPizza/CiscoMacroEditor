@@ -1,0 +1,47 @@
+//Jose Fernandez:
+//This script uses a widget to control zooming on the camera
+// Camera zooms from values 3500 to 8500, with the smaller number being more zoomed in
+
+const xapi = require('xapi');
+
+var value = 8500;
+
+
+function messageMAX() {
+  xapi.command('UserInterface Message Alert Display', {
+    Title: 'Maxmimum Zoom Reached',
+    Text: 'Camera is at Maximum Zoom',
+    Duration: 5,
+  });
+}
+
+function messageMIN() {
+  xapi.command('UserInterface Message Alert Display', {
+    Title: 'Minimum Zoom Reached',
+    Text: 'Camera is at Minumum Zoom',
+    Duration: 5,
+  });
+}
+
+xapi.event.on('UserInterface Extensions Widget Action', (event) => {
+  if ((event.Type === 'pressed') && event.WidgetId == 'zoom'){
+      switch(event.Value){
+        case 'increment':
+            value = value - 500;
+            xapi.command('Camera PositionSet', {CameraId: 1, Tilt: '0', Pan: '0', Zoom: value});
+            if(value <= 3500){
+              value = 3500;
+              messageMAX();
+            }
+            break;
+        case 'decrement':
+            value = value + 500;
+            xapi.command('Camera PositionSet', {CameraId: 1, Tilt: '0', Pan: '0', Zoom: value});
+            if(value >= 8500){
+              value = 8500;
+              messageMIN();
+            }
+            break;
+      }
+    }
+});
