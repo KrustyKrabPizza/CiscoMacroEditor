@@ -1,0 +1,36 @@
+/*
+* Jose Fernandez: 
+* Allows user to switch between presenting camera and laptop through GUI
+*/
+const xapi = require('xapi');
+
+const presentationSources = {
+  presentSource : 'camera',
+  
+};
+
+function startPresentation(option) {
+ xapi.command('Presentation Start', {ConnectorId: [option]});
+ 
+}
+
+function toGUI(){
+  xapi.event.on('UserInterface Extensions Widget Action', (event) => {
+    if(event.WidgetId == 'presentSource'){
+      if(event.Type == 'pressed'){
+        switch(event.Value){
+          case 'camera':
+            xapi.command('Presentation Start', {ConnectorId: [1]});
+            xapi.command('UserInterface Extensions Widget SetValue', {WidgetId: 'presentSource', Value: 'camera'});
+            break;
+          case 'laptop':
+            xapi.command('Presentation Start', {ConnectorId: [2]});
+            xapi.command('UserInterface Extensions Widget SetValue', {WidgetId: 'presentSource', Value: 'laptop'});
+            break;
+        }
+      }
+    }
+  });
+}
+
+toGUI();

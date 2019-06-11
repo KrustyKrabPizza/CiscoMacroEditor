@@ -1,0 +1,48 @@
+//Jose Fernandez: 
+//This script uses 4 buttons on the Touch Panel to set the volume to 25, 50, 75, and 100%
+//Also uses a slider to adjust volume
+
+const xapi = require('xapi');
+
+// These match the widget id of the In-Room control buttons
+var volOptions = {
+  volumeButton25:  25,
+  volumeButton50:  50,
+  volumeButton75:  75,
+  volumeButton100: 100,
+  volSlider: '',
+};
+
+function volumeSet(value){
+  xapi.command('Audio Volume Set', {Level: value});
+}
+  
+function syncGUI(level){
+  //console.log('Testing 4');
+  xapi.command('UserInterface Extensions Widget SetValue', {
+  WidgetId: 'volSlider',
+  Value: level * (255 / 100),
+  });
+}
+
+function listenToGui() {
+  xapi.event.on('UserInterface Extensions Widget Action', (event) => {
+  var chosenVol = volOptions[event.WidgetId];       //Only account for widgets in "numbers" array
+    if(chosenVol || event.WidgetId === 'volSlider'){
+      if(event.Type === 'clicked'){
+          volumeSet(chosenVol);
+      }
+      if (event.Type === 'changed'){
+          var newVolume = event.Value * (100 / 255);
+          var fixed = newVolume.toFixed(0);   //IMPORTANT: Value in "Level :" CANNOT be a number with decimal places
+          //console.log(fixed);               //Used to view volume level on console
+          xapi.command('Audio Volume Set', {Level: fixed});
+      }
+    }
+  });
+}
+
+listenToGui();
+
+xapi.status.on('Audio Volume', syncGUI);
+xapi.status.get('Audio Volume', syncGUI);

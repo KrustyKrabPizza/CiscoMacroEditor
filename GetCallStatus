@@ -1,0 +1,20 @@
+//This script gets live volume and call information that is displayed on the console
+//Changes live audio level to "value"
+
+const xapi = require('xapi');
+
+var value = 70;
+
+function volumeSet(value){
+xapi.command('Audio Volume Set', {Level: value})
+.catch((error) => { console.error(error); });
+}
+
+volumeSet(value);
+
+xapi.status.get('Audio Volume')       //Retrive live volume information
+  .then((volume) => { console.log('Volume is:', volume); });
+  
+xapi.status.get('Call')       //Retreive Call information (Protocol, TransmitRate, etc.)
+  .then((call) => { console.log(call)});
+  
